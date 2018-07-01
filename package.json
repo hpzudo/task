@@ -1,0 +1,22 @@
+{
+  "name": "jstranspiler",
+  "version": "0.0.0",
+  "description": "ES6 to ES5 Transpiler",
+  "main": "eurojackpot_results",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hpzudo/task.git"
+  },
+  "author": "Pedro Bezanilla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hpzudo/task/issues"
+  },
+  "homepage": "https://github.com/hpzudo/task#readme"
+}

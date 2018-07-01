@@ -1,0 +1,12 @@
+.pageMargin{
+    margin: 2em;
+}
+
+.tableTitle {
+    font-size: 21px;
+    line-height: 24px;
+    font-family: FF Daxline Pro;
+    font-weight: 900;
+    color: #012406;
+    text-transform: uppercase;
+}
