@@ -2,11 +2,55 @@
     margin: 2em;
 }
 
-.tableTitle {
+.pageTitle {
     font-size: 21px;
     line-height: 24px;
     font-family: FF Daxline Pro;
     font-weight: 900;
     color: #012406;
     text-transform: uppercase;
+}
+
+.resultsTitle {
+    font-size: 17px;
+    line-height: 26px;
+    font-family: FF Daxline Pro;
+    font-weight: 200;
+    color: #012406;
+    text-transform: none;
+}
+
+.euroJackpotCo {
+    color: #815422!important;
+}
+
+.l-results-numbers{
+    margin-bottom: 5em;
+    margin-top: 1em;
+}
+
+.lottery-numbers-container {
+    display: inline-block;
+    font-size: 14px;
+    color: #012406;
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.l-lottery-numbers-container .l-lottery-number {
+    display: inline-block;
+    font-size: 17px;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border: 1px solid #d9deda;
+    border-radius: 50%;
+    margin-right: 7px;
+    margin-bottom: 7px;
+}
+
+.l-lottery-numbers-container .l-lottery-number.extra {
+    border: 1px solid #ca7f26 !important;
 }

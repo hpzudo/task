@@ -13,7 +13,7 @@ $(document).ready(function(){
     * Calls EuroJackpot API to obtain winning results.
     * @returns API json data
     */    
-    let getEuroJackpotResults = () => {
+    let  getEuroJackpotResults = () => {
 1
         const deferred = $.Deferred();
 
@@ -33,14 +33,22 @@ $(document).ready(function(){
     /**
      * Formats raw euroJackpot API data 
      * @param {raw data from euroJackpot API} data 
-     * @returns formatted object: {"tier": ..., "match": ..., "winners": ..., "amount": ...}
+     * @returns formatted object:   numbers:[...], 
+     *                              euroNumbers:[...], 
+     *                              rank1: {"tier": ..., "match": ..., "winners": ..., "amount": ...}, 
+     *                              ..., 
+     *                              rankN: {...}
      */
     let formatEuroJackpotLastResults = (data) => {
         
         const numbers = data.numbers;
         const euroNumbers = data.euroNumbers;
-        const results = data.odds;
-        let formattedResult = {};
+        const results = data.odds;  
+        let formattedResult = [];     
+        formattedResult["numbers"] = data.numbers;
+        formattedResult["euroNumbers"] =  data.euroNumbers;
+        formattedResult["date"] = formattedDate(data.date);
+        formattedResult["ranks"] = [];
 
         $.each(results, function(index, result) {
             const prizeWithCommaAndDec = numberWithCommasAndDecimals(result.prize.toString());
@@ -113,14 +121,16 @@ $(document).ready(function(){
                     break;
             }
             if(tier !== '0'){
-                formattedResult[index] = {
-                    "tier"      :   tier,
-                    "match"     :   match,
-                    "winners"   :   winnersWithComma,
-                    "amount"    :   `€${prizeWithCommaAndDec}`
+                formattedResult['ranks'][index] = {
+                    "tier"          :   tier,
+                    "match"         :   match,
+                    "winners"       :   winnersWithComma,
+                    "amount"        :   `€${prizeWithCommaAndDec}`
                 };
+
             }
         }); 
+        
 
         return formattedResult;
     }
@@ -137,29 +147,105 @@ $(document).ready(function(){
             return `${commaNum}.${decNum}`;
     }
 
+    /** Draws Body Table from EuroJackpot Results
+     * @param {table data} tableData
+     */
+    let drawEuroJackpotResults = (euroJackpotLastResults) => {
+
+        let tableBodyHtml = '';
+        let winnerResultsHtml = '';
+        const euroJackpotNums = euroJackpotLastResults.numbers;
+        const euroJackpotEuroNums = euroJackpotLastResults.euroNumbers;
+        const euroJackpotRanks = euroJackpotLastResults.ranks;
+        const euroJackpotResultsDate = euroJackpotLastResults.date;
+
+        // Title results draw
+        $('#results-title').html(`<span class="euroJackpotCo">EuroJackpot</span> Results for ${euroJackpotResultsDate}`);
+
+        // Winner results numbers
+        for (const key in euroJackpotNums) { 
+            winnerResultsHtml = `${winnerResultsHtml}
+            <li class="l-lottery-number">
+                ${euroJackpotNums[key]}
+            </li>`;
+        }
+        for (const key in euroJackpotEuroNums) { 
+            winnerResultsHtml = `${winnerResultsHtml}
+            <li class="l-lottery-number extra extra">
+                ${euroJackpotEuroNums[key]}
+            </li>`;
+        }
+        $('#results-numbers > ul').html(winnerResultsHtml);
+
+        // Table body draw
+        for (const key in euroJackpotRanks) {
+            tableBodyHtml = `${tableBodyHtml}
+            <tr>
+                <td>${euroJackpotRanks[key].tier}</td>
+                <td>${euroJackpotRanks[key].match}</td>
+                <td>${euroJackpotRanks[key].winners}</td>
+                <td>${euroJackpotRanks[key].amount}</td>
+            </tr>`;
+        }
+        $('#eurojackpot-results-table tbody').html(tableBodyHtml);
+        
+    }
+
+    /**
+     * Checks if data is JSON
+     * @param {JSON} str 
+     */
+    let IsJsonString = (str) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param {object: {"day": d "month": m "year": y, ...}} date 
+     * @return example: if day = 29, month = 6, year = 2018, returns: Friday 29 Jun 2018
+     */
+    let formattedDate = (date) => {
+        const dateMonth = date.month;
+        const dateDay = date.day;
+        const dateYear = date.year;
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = {  
+            '1' : 'Jan', 
+            '2' : 'Feb', 
+            '3' : 'Mar', 
+            '4' : 'Apr', 
+            '5' : 'May', 
+            '6' : 'Jun', 
+            '7' : 'Jul', 
+            '8' : 'Aug', 
+            '9' : 'Sep', 
+            '10': 'Oct',
+            '11': 'Nov', 
+            '12': 'Dec'
+        };
+        const d = new Date(`${dateMonth}-${dateDay}-${dateYear}`);
+        const dayName = days[d.getDay()];
+        const monthName = months[dateMonth];
+
+        return `${dayName} ${dateDay} ${monthName} ${dateYear}`;
+    }
+
 
     /**************************
     *         CALLS          **
     ***************************/
 
-
-    getEuroJackpotResults()
+   getEuroJackpotResults ()
         .done(
             data => {
-                if('last' in data){
+                if(IsJsonString && 'last' in data){
                     const euroJackpotLastResults = formatEuroJackpotLastResults(data.last);
-                    let tableBodyHtml = '';
-                    for (const key in euroJackpotLastResults) {
-                        tableBodyHtml = `${tableBodyHtml}
-                                            <tr>
-                                                <td>${euroJackpotLastResults[key].tier}</td>
-                                                <td>${euroJackpotLastResults[key].match}</td>
-                                                <td>${euroJackpotLastResults[key].winners}</td>
-                                                <td>${euroJackpotLastResults[key].amount}</td>
-                                            </tr>`;
-                    }
-
-                    $('#eurojackpot-results-table tbody').html(tableBodyHtml);
+                    drawEuroJackpotResults(euroJackpotLastResults);
                 }
                 else{
                     console.log('field "last" does not exist on the callback API data');
@@ -168,7 +254,7 @@ $(document).ready(function(){
         ) 
         .fail(
             data => {
-                let test2 = "hola2";
+                console.log(`Error when calling (): ${data}`);
             }
         );
 
