@@ -254,7 +254,7 @@ $(document).ready(function(){
         ) 
         .fail(
             data => {
-                console.log(`Error when calling (): ${data}`);
+                console.log(`Error when calling getEuroJackpotResults(): ${data}`);
             }
         );
 
